@@ -1,5 +1,4 @@
 from fastapi import APIRouter, Depends, status, HTTPException
-
 import models, schemas, oaut2
 from sqlalchemy.orm import Session
 from typing import List, Optional
@@ -18,8 +17,8 @@ def all(db:Session = Depends(get_db)):
 
 
 @router.post('/', status_code=status.HTTP_201_CREATED)
-def create(request: schemas.Post, db: Session = Depends(get_db),current_user:schemas.User = Depends(oaut2.get_current_user)):
-    return post.create(request,db)
+def create(request: schemas.Post, db: Session = Depends(get_db), current_user:schemas.User = Depends(oaut2.get_current_user)):
+    return post.create(request,db, current_user)
 
 
 @router.delete('/{id}', status_code=status.HTTP_204_NO_CONTENT)

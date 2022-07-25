@@ -11,12 +11,12 @@ def get_all(db: Session):
     return posts
 
 
-def create(request: schemas.Post, db: Session):
+def create(request: schemas.Post, db: Session, current_user: schemas.User_id):
     new_post = models.Post(brand=request.brand, model=request.model,
                            year_of_release=request.year_of_release,car_body=request.car_body,
                            generation=request.generation, engine=request.engine,
                            actuator=request.actuator, transmission=request.transmission,
-                           color=request.color, mileage=request.mileage, price=request.price, user_id=1)
+                           color=request.color, mileage=request.mileage, price=request.price, user_id = current_user.id)
     db.add(new_post)
     db.commit()
     db.refresh(new_post)
