@@ -1,5 +1,6 @@
 uvicorn
-sqlalchemy
+sqlalchemy == 1.4.35
 passlib
 bcrypt
 python-jose
+fastapi-pagination

@@ -1,8 +1,9 @@
-from sqlalchemy import and_, or_, not_
+from sqlalchemy import and_
 from fastapi import HTTPException, status
-from pydantic.class_validators import Optional
 from sqlalchemy.orm import Session
 import models, schemas
+from fastapi_pagination import Params
+from fastapi_pagination.ext.sqlalchemy import paginate
 
 
 
@@ -42,11 +43,11 @@ def update(id:int, request:schemas.Post, db:Session):
     return 'updated'
 
 
-def search(brand: str, model: str, generation: str,car_body: str,
+def search(params: Params, brand: str, model: str, generation: str,car_body: str,
            engine: str, actuator: str, transmission: str, price_from: int, price_to: int,
            year_of_release_from: int, year_of_release_to: int, mileage_from: int, mileage_to: int,
-           db: Session, limit: int = 10, skip: int = 0):
-    post = db.query(models.Post).filter(and_(brand == None or models.Post.brand == brand,
+           db: Session):
+    posts = db.query(models.Post).filter(and_(brand == None or models.Post.brand == brand,
                                              model == None or models.Post.model.contains(model)),
                                              generation == None or models.Post.generation == generation,
                                              car_body == None or models.Post.car_body == car_body,
@@ -58,8 +59,8 @@ def search(brand: str, model: str, generation: str,car_body: str,
                                              year_of_release_from == None or models.Post.year_of_release >= year_of_release_from,
                                              year_of_release_to == None or models.Post.year_of_release <= year_of_release_to,
                                              mileage_from == None or models.Post.mileage >= mileage_from,
-                                             mileage_to == None or models.Post.mileage <= mileage_to).all()
-    if not post:
+                                             mileage_to == None or models.Post.mileage <= mileage_to)
+    if not posts:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
                             detail={'detail': f'Post with this filters is not found'})
-    return post[skip : skip + limit]
+    return paginate(posts, params)

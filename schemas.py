@@ -1,5 +1,6 @@
 from typing import List, Optional
 from pydantic import BaseModel
+from fastapi import Query
 
 
 class PostBase(BaseModel):
@@ -23,7 +24,7 @@ class Post(PostBase):
 class User(BaseModel):
     name: str
     email: str
-    phone:str
+    phone:str = Query(min_length=10)
     password: str
 
 

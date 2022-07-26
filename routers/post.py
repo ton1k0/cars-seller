@@ -1,9 +1,10 @@
-from fastapi import APIRouter, Depends, status, HTTPException
-import models, schemas, oaut2
+from fastapi import APIRouter, Depends, status
+import schemas, oaut2
 from sqlalchemy.orm import Session
-from typing import List, Optional
+from typing import List
 from database import get_db
 from scripts import post
+from fastapi_pagination import Page, Params
 
 router = APIRouter(
     prefix='/post',
@@ -31,11 +32,11 @@ def update(id:int, request: schemas.Post, db: Session = Depends(get_db),current_
     return post.update(id, request, db)
 
 
-@router.get('/search')
-def search(brand: str, model: str | None = None, generation: str| None = None,
+@router.get('/search',response_model=Page[schemas.Post])
+def search(params: Params = Depends(), brand: str | None = None, model: str | None = None, generation: str| None = None,
            car_body: str | None = None, engine: str | None = None,
            actuator: str | None = None, transmission: str | None = None, price_from: int | None = None,
            price_to: int | None = None, year_of_release_from: int | None = None, year_of_release_to: int | None = None,
            mileage_from: int | None = None, mileage_to: int | None = None, db: Session = Depends(get_db)):
-    return post.search(brand, model, generation,car_body,engine,actuator,transmission, price_from,price_to,
+    return post.search(params, brand, model, generation,car_body,engine,actuator,transmission, price_from,price_to,
                        year_of_release_from,year_of_release_to,mileage_from,mileage_to,db)
